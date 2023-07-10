@@ -24,7 +24,9 @@ public class ConfigProperties implements Serializable {
 
     private String clientSecret;
 
-    private Set<MockPropertiesFields> mockFields;
+    private Boolean isMock = false;
+
+    private MockPropertiesFields propertiesMock;
 
     private Set<Property> properties;
 

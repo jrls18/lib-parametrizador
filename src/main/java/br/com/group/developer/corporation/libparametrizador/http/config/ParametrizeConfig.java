@@ -1,12 +1,9 @@
 package br.com.group.developer.corporation.libparametrizador.http.config;
 
 import br.com.group.developer.corporation.libparametrizador.config.ConfigProperties;
-import io.github.resilience4j.bulkhead.Bulkhead;
-import io.github.resilience4j.bulkhead.BulkheadConfig;
-import io.github.resilience4j.circuitbreaker.CircuitBreaker;
-import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
-import io.github.resilience4j.retry.Retry;
-import io.github.resilience4j.retry.RetryConfig;
+import br.com.group.developer.corporation.libparametrizador.exceptions.BadRequestParameterizeException;
+import br.com.group.developer.corporation.libparametrizador.exceptions.InternalServerErrorParameterizeException;
+import br.com.grupo.developer.corporation.libcommons.message.response.MessageResponse;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
@@ -17,15 +14,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ClientHttpConnector;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 
-import javax.net.ssl.SSLException;
-import javax.net.ssl.SSLHandshakeException;
-import java.net.ConnectException;
-import java.net.http.HttpConnectTimeoutException;
-import java.net.http.HttpTimeoutException;
-import java.time.Duration;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -36,16 +29,13 @@ public class ParametrizeConfig {
 
     private final ConfigProperties configProperties;
 
-
     static {
 
-        var environment = Optional.ofNullable(System.getenv("PARAMETRIZADOR_ENVIRONMENT"))
+        var environment = Optional.ofNullable(System.getenv("SPRING_PROFILES_ACTIVE"))
                 .map(String::toLowerCase)
                 .orElse("dev");
 
-        //String url = "https://apps-comp-%s.teste.com.br/parametrize/configure/execute/";
-
-        String url = "http://localhost:5001/service--parametrizador/configurator/v1/execute/";
+        String url = "http://apps-comp-cloud.%s.develop.corporation.com/service--parametrizador/configurator/v1/execute/";
 
         if("hml".equalsIgnoreCase(environment))
             URL = String.format(url, "hml");
@@ -54,8 +44,6 @@ public class ParametrizeConfig {
         else
             URL = String.format(url, "dev");
     }
-
-
 
     @Bean
     public WebClient getWebClient()
@@ -76,59 +64,28 @@ public class ParametrizeConfig {
                 .defaultHeader("client_id",configProperties.getClientId())
                 .defaultHeader("client_secret",configProperties.getClientSecret())
                 .defaultHeader("correlation_id", UUID.randomUUID().toString())
+                .filter(errorResponse())
                 .build();
     }
 
-    @Bean
-    private static CircuitBreaker circuitBreaker(){
-        CircuitBreakerConfig config = CircuitBreakerConfig.custom()
-                .waitDurationInOpenState(Duration.ofSeconds(2))
-                .slowCallDurationThreshold(Duration.ofSeconds(2))
-                .permittedNumberOfCallsInHalfOpenState(5)
-                .minimumNumberOfCalls(80)
-                .recordExceptions(
-                        HttpTimeoutException.class,
-                        HttpConnectTimeoutException.class,
-                        IllegalArgumentException.class,
-                        SecurityException.class,
-                        SSLHandshakeException.class,
-                        SSLException.class,
-                        ConnectException.class
-                )
-                .ignoreExceptions(InterruptedException.class)
-                .build();
+    private ExchangeFilterFunction errorResponse(){
+        return ExchangeFilterFunction.ofResponseProcessor(clientResponse -> {
 
-        return CircuitBreaker.of("parametrizador-cb", config);
+            if(clientResponse.statusCode().is4xxClientError()){
+                return clientResponse.bodyToMono(MessageResponse.class)
+                        .flatMap(body -> {
+                           return Mono.error(new BadRequestParameterizeException(body));
+                        });
+            }
+
+            if(clientResponse.statusCode().is5xxServerError()){
+                return clientResponse.bodyToMono(String.class)
+                        .flatMap(body -> {
+                            return Mono.error(new InternalServerErrorParameterizeException("Erro ao realizar a chamada da api do parametrizador."));
+                        });
+            }
+
+           return Mono.just(clientResponse);
+        });
     }
-
-    @Bean
-    private static Bulkhead bulkhead(){
-        BulkheadConfig config = BulkheadConfig.custom()
-                .maxConcurrentCalls(20)
-                .maxWaitDuration(Duration.ofMillis(500))
-                .build();
-        return Bulkhead.of("parametrizador-blk",config);
-    }
-
-    @Bean
-    private static Retry retry(){
-        RetryConfig config = RetryConfig.custom()
-                .maxAttempts(2)
-                .waitDuration(Duration.ofMillis(300))
-                .retryExceptions(
-                        ConnectException.class
-                )
-                .ignoreExceptions(HttpTimeoutException.class,
-                        HttpConnectTimeoutException.class,
-                        IllegalArgumentException.class,
-                        SecurityException.class,
-                        SSLHandshakeException.class,
-                        SSLException.class
-                )
-                .failAfterMaxAttempts(true)
-                .build();
-
-        return Retry.of("parametrizador-retry", config);
-    }
-
 }

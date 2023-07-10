@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -16,7 +17,5 @@ public class MockPropertiesFields implements Serializable {
     @Serial
     private static final long serialVersionUID = 1753929111402261495L;
 
-    private String key;
-
-    private String value;
+    private Set<RequestFields> fields;
 }
