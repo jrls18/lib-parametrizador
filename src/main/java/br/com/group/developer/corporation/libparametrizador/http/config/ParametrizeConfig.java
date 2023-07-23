@@ -35,7 +35,7 @@ public class ParametrizeConfig {
                 .map(String::toLowerCase)
                 .orElse("dev");
 
-        String url = "http://apps-comp-cloud.%s.develop.corporation.com/service--parametrizador/configurator/v1/execute/";
+        String url = "http://cloud.%s.develop.corporation.com/service--parametrizador/configurator/v1/execute/";
 
         if("hml".equalsIgnoreCase(environment))
             URL = String.format(url, "hml");
