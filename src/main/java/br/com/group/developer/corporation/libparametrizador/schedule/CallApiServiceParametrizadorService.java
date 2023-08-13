@@ -1,4 +1,4 @@
-package br.com.group.developer.corporation.libparametrizador.http.service;
+package br.com.group.developer.corporation.libparametrizador.schedule;
 
 
 import br.com.group.developer.corporation.libparametrizador.exceptions.InternalServerErrorParameterizeException;
@@ -13,10 +13,9 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class ParametrizadorService {
+class CallApiServiceParametrizadorService {
 
     private final WebClient webClient;
-
 
     public Map<String, Object> getParameters(final String propertiesName,final Map<String, Object> map){
        return webClient

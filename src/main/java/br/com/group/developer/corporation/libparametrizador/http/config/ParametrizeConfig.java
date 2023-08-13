@@ -76,9 +76,7 @@ public class ParametrizeConfig {
                         .flatMap(body -> {
                            return Mono.error(new BadRequestParameterizeException(body));
                         });
-            }
-
-            if(clientResponse.statusCode().is5xxServerError()){
+            }else if(clientResponse.statusCode().is5xxServerError()){
                 return clientResponse.bodyToMono(String.class)
                         .flatMap(body -> {
                             return Mono.error(new InternalServerErrorParameterizeException("Erro ao realizar a chamada da api do parametrizador."));

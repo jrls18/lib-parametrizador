@@ -18,13 +18,13 @@ import java.util.Set;
 public class ConfigProperties implements Serializable {
     private static final long serialVersionUID = 7857030974398301533L;
 
-    private boolean mockPropertiesField = false;
-
     private String clientId;
 
     private String clientSecret;
 
     private Boolean isMock = false;
+
+    private boolean validaParametrizadorEstaUp = false;
 
     private MockPropertiesFields propertiesMock;
 
