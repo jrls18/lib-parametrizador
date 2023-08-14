@@ -67,7 +67,7 @@ class ParametrizadorRepository {
     }
 
     public Map<String, Object> getAtualizaPropertiesParametrize() {
-        Map<String, Object> mapCaching = null;
+        Map<String, Object> mapCaching = new HashMap<>();
 
         if(Objects.nonNull(configProperties.getProperties()) && Boolean.FALSE.equals(CollectionUtils.isEmpty(configProperties.getProperties()))){
 
@@ -82,8 +82,6 @@ class ParametrizadorRepository {
                     Map<String,Object> response =  service.getParameters(property.getName(),request);
 
                     if(Objects.nonNull(response) && Boolean.FALSE.equals(response.isEmpty())){
-                        mapCaching = new HashMap<>();
-
 
                         for(String cacheConfiguration : property.getFieldCaching().getFields()){
                             for (Map.Entry<String,Object> m : response.entrySet()){

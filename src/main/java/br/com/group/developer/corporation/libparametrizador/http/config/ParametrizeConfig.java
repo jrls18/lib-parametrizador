@@ -41,6 +41,8 @@ public class ParametrizeConfig {
             URL = String.format(url, "hml");
         else if("prd".equalsIgnoreCase(environment))
             URL = String.format(url,"prd");
+        else if("local".equalsIgnoreCase(environment))
+            URL = "http://localhost:5001/service--parametrizador/configurator/v1/execute/";
         else
             URL = String.format(url, "dev");
     }
@@ -58,12 +60,13 @@ public class ParametrizeConfig {
         ClientHttpConnector connector = new ReactorClientHttpConnector(httpClient);
 
         return WebClient.builder()
-                .baseUrl("http://localhost:5001/service--parametrizador/configurator/v1/execute/")
+                .baseUrl(URL)
                 .clientConnector(connector)
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .defaultHeader("client_id",configProperties.getClientId())
                 .defaultHeader("client_secret",configProperties.getClientSecret())
                 .defaultHeader("correlation_id", UUID.randomUUID().toString())
+                .defaultHeader("origin", configProperties.getApplicationName())
                 .filter(errorResponse())
                 .build();
     }

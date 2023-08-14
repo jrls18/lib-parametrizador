@@ -1,13 +1,10 @@
 package br.com.group.developer.corporation.libparametrizador.config;
 
-import br.com.group.developer.corporation.libparametrizador.constants.ParametrizeConstants;
 import br.com.group.developer.corporation.libparametrizador.exceptions.ErroAoConsultarApiDoParametrizadorException;
 import br.com.group.developer.corporation.libparametrizador.schedule.ParameterizeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
@@ -29,10 +26,5 @@ public class StartValidParametrizeUpConfig {
             log.warn(ex.getMessage());
             throw ex;
         }
-    }
-
-    @Bean
-    public CacheManager cacheManager() {
-        return new ConcurrentMapCacheManager(ParametrizeConstants.CACHE_PARAMS_NAME);
     }
 }

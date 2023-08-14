@@ -22,6 +22,8 @@ public class ConfigProperties implements Serializable {
 
     private String clientSecret;
 
+    private String applicationName;
+
     private Boolean isMock = false;
 
     private boolean validaParametrizadorEstaUp = false;
