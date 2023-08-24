@@ -14,6 +14,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 @Log4j2
 @Component
@@ -31,8 +32,11 @@ public class ParameterizeService {
         Map<String, Object> mapCaching = null;
 
         try {
-            if(properties.getIsMock() &&
-                    System.getenv("SPRING_PROFILES_ACTIVE").equalsIgnoreCase("local")){
+            var environment = Optional.ofNullable(System.getenv("SPRING_PROFILES_ACTIVE"))
+                    .map(String::toLowerCase)
+                    .orElse("local");
+
+            if(properties.getIsMock() && environment.equalsIgnoreCase("local")){
 
                 if(Objects.isNull(properties.getPropertiesMock()) || CollectionUtils.isEmpty(properties.getPropertiesMock().getFields()))
                     throw new NaoExisteMockConfiguradoException("Processo de Mock está ativo e não existe parametros configurado para ser mockado.");

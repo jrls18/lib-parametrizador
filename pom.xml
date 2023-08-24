@@ -12,7 +12,7 @@
 
 	<groupId>br.com.group.developer.corporation</groupId>
 	<artifactId>lib-parametrizador</artifactId>
-	<version>1.0.2</version>
+	<version>1.0.3</version>
 	<name>lib-parametrizador</name>
 
 	<properties>
