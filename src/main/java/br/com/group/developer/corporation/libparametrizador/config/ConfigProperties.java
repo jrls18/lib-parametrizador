@@ -24,6 +24,8 @@ public class ConfigProperties implements Serializable {
 
     private String applicationName;
 
+    private String urlBase;
+
     private Boolean isMock = false;
 
     private boolean validaParametrizadorEstaUp = false;
