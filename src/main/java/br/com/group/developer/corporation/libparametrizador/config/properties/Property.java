@@ -5,9 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 import java.io.Serializable;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -18,7 +16,7 @@ public class Property implements Serializable {
 
     private String name;
 
-    private Set<RequestFields> requestFields;
+    private String[] fieldRequest;
 
-    private ResponseCacheConfiguration fieldCaching;
+    private String[] filter;
 }

@@ -36,7 +36,8 @@ public class ParameterizeService {
                     .map(String::toLowerCase)
                     .orElse("local");
 
-            if(properties.getIsMock() && environment.equalsIgnoreCase("local")){
+            if(Boolean.TRUE.equals(properties.getIsMock())
+                    && environment.equalsIgnoreCase("local")){
 
                 if(Objects.isNull(properties.getPropertiesMock()) || CollectionUtils.isEmpty(properties.getPropertiesMock().getFields()))
                     throw new NaoExisteMockConfiguradoException("Processo de Mock está ativo e não existe parametros configurado para ser mockado.");
