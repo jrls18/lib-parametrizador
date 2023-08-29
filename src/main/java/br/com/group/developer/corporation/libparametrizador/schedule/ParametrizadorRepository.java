@@ -1,8 +1,6 @@
 package br.com.group.developer.corporation.libparametrizador.schedule;
 
 import br.com.group.developer.corporation.libparametrizador.config.ConfigProperties;
-import br.com.group.developer.corporation.libparametrizador.config.properties.Property;
-import br.com.group.developer.corporation.libparametrizador.config.properties.RequestFields;
 import br.com.group.developer.corporation.libparametrizador.constants.ParametrizeConstants;
 import br.com.group.developer.corporation.libparametrizador.exceptions.ErroAoConsultarApiDoParametrizadorException;
 import br.com.group.developer.corporation.libparametrizador.exceptions.NaoExisteParametroConfiguradoNoParametrizadorException;
@@ -53,7 +51,6 @@ class ParametrizadorRepository {
         }
     }
 
-
     public void removeCache(){
         cacheManager.getCacheNames()
                 .parallelStream()
@@ -66,46 +63,28 @@ class ParametrizadorRepository {
        return map;
     }
 
-    public Map<String, Object> getAtualizaPropertiesParametrize() {
-        Map<String, Object> mapCaching = new HashMap<>();
+    public Map<String, Object> getAtualizaPropertiesParametrize(){
+        Map<String, Object> mapCaching = null;
 
-        if(Objects.nonNull(configProperties.getProperties()) && Boolean.FALSE.equals(CollectionUtils.isEmpty(configProperties.getProperties()))){
+        try{
+            if(Objects.nonNull(configProperties.getItemsProperties()) &&
+                    Boolean.FALSE.equals(CollectionUtils.isEmpty(configProperties.getItemsProperties().getProperties())) &&
+                    Objects.nonNull(configProperties.getItemsProperties().getFilterCondition()) &&
+                    configProperties.getItemsProperties().getFilterCondition().length > 0
+            ){
+                mapCaching = new HashMap<>();
 
-            for (Property property: configProperties.getProperties()) {
-                Map<String,Object> request = new HashMap<>(property.getRequestFields().size());
+                Map<String,Object> items = service.getParameters(configProperties.getItemsProperties());
 
-                for(RequestFields requestFields : property.getRequestFields()){
-                    request.put(requestFields.getKey(),requestFields.getValue());
-                }
+                Map<String, Object> objectMap = (Map<String, Object>) items.get("properties");
 
-                try {
-                    Map<String,Object> response =  service.getParameters(property.getName(),request);
-
-                    if(Objects.nonNull(response) && Boolean.FALSE.equals(response.isEmpty())){
-
-                        for(String cacheConfiguration : property.getFieldCaching().getFields()){
-                            for (Map.Entry<String,Object> m : response.entrySet()){
-
-                                if(m.getKey().equalsIgnoreCase("properties")){
-
-                                    Map<String,Object> objectMap = (Map<String, Object>) m.getValue();
-                                    for (Map.Entry<String,Object> item: objectMap.entrySet()) {
-                                        if(cacheConfiguration.equalsIgnoreCase(item.getKey()))
-                                            mapCaching.put(item.getKey(),item.getValue());
-                                    }
-
-                                }else {
-                                    if(cacheConfiguration.equalsIgnoreCase(m.getKey()))
-                                        mapCaching.put(m.getKey(),m.getValue());
-                                }
-                            }
-                        }
-                    }
-                }catch (Exception ex){
-                    throw new ErroAoConsultarApiDoParametrizadorException("MANTEMOS O CACHE pois deu um erro ao consultar api do SERVICE--PARAMETRIZADOR detalhes: " + ex.getMessage());
-                }
+                mapCaching.putAll(objectMap);
             }
+        }catch (Exception ex){
+            throw new ErroAoConsultarApiDoParametrizadorException("MANTEMOS O CACHE pois deu um erro ao consultar api do SERVICE--PARAMETRIZADOR detalhes: " + ex.getMessage());
         }
+
         return mapCaching;
     }
+
 }

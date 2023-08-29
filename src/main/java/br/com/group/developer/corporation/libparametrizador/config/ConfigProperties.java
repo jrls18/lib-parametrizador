@@ -1,15 +1,14 @@
 package br.com.group.developer.corporation.libparametrizador.config;
 
 
+import br.com.group.developer.corporation.libparametrizador.config.properties.ItemsProperties;
 import br.com.group.developer.corporation.libparametrizador.config.properties.MockPropertiesFields;
-import br.com.group.developer.corporation.libparametrizador.config.properties.Property;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.Serializable;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -28,10 +27,10 @@ public class ConfigProperties implements Serializable {
 
     private Boolean isMock = false;
 
-    private boolean validaParametrizadorEstaUp = false;
+    private boolean validParameterizeIsUp = false;
 
     private MockPropertiesFields propertiesMock;
 
-    private Set<Property> properties;
+    private ItemsProperties itemsProperties;
 
 }
