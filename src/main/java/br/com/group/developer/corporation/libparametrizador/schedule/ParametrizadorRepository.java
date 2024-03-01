@@ -68,9 +68,8 @@ class ParametrizadorRepository {
 
         try{
             if(Objects.nonNull(configProperties.getFilterMultipleKey()) &&
-                    Boolean.FALSE.equals(Objects.nonNull(configProperties.getFilterMultipleKey().getProperties())) &&
-                    Boolean.FALSE.equals(Objects.nonNull(configProperties.getFilterMultipleKey().getProperties().getKey())) &&
-                    Objects.nonNull(configProperties.getFilterMultipleKey().getProperties().getFilter())
+                    Objects.nonNull(configProperties.getFilterMultipleKey().getProperties()) &&
+                    Objects.nonNull(configProperties.getFilterMultipleKey().getProperties().getKey())
             ){
                 mapCaching = new HashMap<>();
 
