@@ -67,14 +67,14 @@ class ParametrizadorRepository {
         Map<String, Object> mapCaching = null;
 
         try{
-            if(Objects.nonNull(configProperties.getItemsProperties()) &&
-                    Boolean.FALSE.equals(CollectionUtils.isEmpty(configProperties.getItemsProperties().getProperties())) &&
-                    Objects.nonNull(configProperties.getItemsProperties().getFilterCondition()) &&
-                    configProperties.getItemsProperties().getFilterCondition().length > 0
+            if(Objects.nonNull(configProperties.getFilterMultipleKey()) &&
+                    Boolean.FALSE.equals(Objects.nonNull(configProperties.getFilterMultipleKey().getProperties())) &&
+                    Boolean.FALSE.equals(Objects.nonNull(configProperties.getFilterMultipleKey().getProperties().getKey())) &&
+                    Objects.nonNull(configProperties.getFilterMultipleKey().getProperties().getFilter())
             ){
                 mapCaching = new HashMap<>();
 
-                Map<String,Object> items = service.getParameters(configProperties.getItemsProperties());
+                Map<String,Object> items = service.getParameters(configProperties.getFilterMultipleKey());
 
                 Map<String, Object> objectMap = (Map<String, Object>) items.get("properties");
 

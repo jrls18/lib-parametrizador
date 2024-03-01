@@ -2,7 +2,7 @@ package br.com.group.developer.corporation.libparametrizador.schedule;
 
 
 import br.com.group.developer.corporation.libparametrizador.config.ConfigProperties;
-import br.com.group.developer.corporation.libparametrizador.config.properties.ItemsProperties;
+import br.com.group.developer.corporation.libparametrizador.config.properties.FilterMultipleChave;
 import br.com.group.developer.corporation.libparametrizador.exceptions.BadRequestParameterizeException;
 import br.com.group.developer.corporation.libparametrizador.exceptions.InternalServerErrorParameterizeException;
 import br.com.grupo.developer.corporation.libcommons.message.response.MessageResponse;
@@ -28,7 +28,7 @@ class CallApiServiceParametrizadorService {
     private final ConfigProperties configProperties;
     public static final String URL;
 
-    private static final String GENERIC_URL = "/service--parametrizador/configurator/v1/filter/execute";
+    private static final String GENERIC_URL = "/service--parametrizador/chave/v1/filter/execute";
 
 
     static {
@@ -49,7 +49,7 @@ class CallApiServiceParametrizadorService {
             URL = String.format(url, "dev");
     }
 
-    public Map<String, Object> getParameters(final ItemsProperties itemsProperties){
+    public Map<String, Object> getParameters(final FilterMultipleChave properties){
 
         return WebClient.builder()
                 .filter(errorResponse())
@@ -60,7 +60,7 @@ class CallApiServiceParametrizadorService {
                 .header("client_secret",configProperties.getClientSecret())
                 .header("correlation_id", UUID.randomUUID().toString())
                 .header("origin", configProperties.getApplicationName())
-                .body(BodyInserters.fromObject(itemsProperties))
+                .body(BodyInserters.fromObject(properties))
                 .retrieve()
                 .bodyToMono(Map.class)
                 .retryWhen(Retry.max(3).filter(reponse -> reponse instanceof InternalServerErrorParameterizeException))
