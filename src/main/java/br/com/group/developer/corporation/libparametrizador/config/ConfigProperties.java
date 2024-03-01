@@ -1,7 +1,7 @@
 package br.com.group.developer.corporation.libparametrizador.config;
 
 
-import br.com.group.developer.corporation.libparametrizador.config.properties.ItemsProperties;
+import br.com.group.developer.corporation.libparametrizador.config.properties.FilterMultipleChave;
 import br.com.group.developer.corporation.libparametrizador.config.properties.MockPropertiesFields;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,6 +31,6 @@ public class ConfigProperties implements Serializable {
 
     private MockPropertiesFields propertiesMock;
 
-    private ItemsProperties itemsProperties;
+    private FilterMultipleChave filterMultipleKey;
 
 }
