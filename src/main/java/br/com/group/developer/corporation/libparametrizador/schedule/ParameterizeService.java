@@ -26,7 +26,6 @@ public class ParameterizeService {
 
     private final ParametrizadorRepository repository;
 
-
     private Map<String, Object> getProperties()  {
 
         Map<String, Object> mapCaching = null;
@@ -34,10 +33,12 @@ public class ParameterizeService {
         try {
             var environment = Optional.ofNullable(System.getenv("SPRING_PROFILES_ACTIVE"))
                     .map(String::toLowerCase)
-                    .orElse("local");
+                    .orElse("dev");
 
-            if(Boolean.TRUE.equals(properties.getIsMock())
-                    && environment.equalsIgnoreCase("local")){
+            if(Boolean.TRUE.equals(properties.getIsMock())){
+
+                if(!"local".equalsIgnoreCase(environment))
+                    throw new NaoExisteMockConfiguradoException("Para os ambientes de DEV, HOM e PROD não pode está ativado o mock");
 
                 if(Objects.isNull(properties.getPropertiesMock()) || CollectionUtils.isEmpty(properties.getPropertiesMock().getFields()))
                     throw new NaoExisteMockConfiguradoException("Processo de Mock está ativo e não existe parametros configurado para ser mockado.");

@@ -26,10 +26,10 @@ import java.util.UUID;
 class CallApiServiceParametrizadorService {
 
     private final ConfigProperties configProperties;
+
     public static final String URL;
 
     private static final String GENERIC_URL = "/service--parametrizador/chave/v1/filter/execute";
-
 
     static {
 
@@ -85,5 +85,4 @@ class CallApiServiceParametrizadorService {
             return Mono.just(clientResponse);
         });
     }
-
 }
