@@ -27,8 +27,6 @@ public class ConfigProperties implements Serializable {
 
     private Boolean isMock = false;
 
-    private boolean validParameterizeIsUp = false;
-
     private MockPropertiesFields propertiesMock;
 
     private FilterMultipleChave filterMultipleKey;
