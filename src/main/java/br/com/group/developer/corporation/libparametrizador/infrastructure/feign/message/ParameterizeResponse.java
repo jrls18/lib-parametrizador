@@ -1,10 +1,11 @@
-package br.com.group.developer.corporation.libparametrizador.http.message;
+package br.com.group.developer.corporation.libparametrizador.infrastructure.feign.message;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -12,10 +13,10 @@ import java.util.Map;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Response implements Serializable {
-    private static final long serialVersionUID = 1932692629871641548L;
+public class ParameterizeResponse implements Serializable {
 
-    private String codigo;
-    private String nome;
+    @Serial
+    private static final long serialVersionUID = -5914561908766047397L;
+
     private Map<String,Object> properties;
 }

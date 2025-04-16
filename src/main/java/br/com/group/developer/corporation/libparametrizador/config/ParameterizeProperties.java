@@ -1,6 +1,5 @@
 package br.com.group.developer.corporation.libparametrizador.config;
 
-import br.com.group.developer.corporation.libparametrizador.config.properties.FilterMultipleKey;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
@@ -12,7 +11,6 @@ import org.springframework.validation.annotation.Validated;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Optional;
 
 @Getter
 @Setter
@@ -20,10 +18,10 @@ import java.util.Optional;
 @Configuration
 @ConfigurationProperties(value = "parameterize", ignoreInvalidFields = true)
 @Validated
-public class ConfigProperties implements Serializable {
+public class ParameterizeProperties implements Serializable {
 
     @Serial
-    private static final long serialVersionUID = -614806822373052148L;
+    private static final long serialVersionUID = 5494335064406159711L;
 
     @Pattern(regexp = "^([0-9]*)$", message = "O campo maxRetry deve conter apenas valores númericos")
     private String maxRetry = "3";
@@ -43,22 +41,4 @@ public class ConfigProperties implements Serializable {
 
     @NotNull(message = "O campo applicationName é obrigatório")
     private String applicationName;
-
-    private FilterMultipleKey filterMultipleKey;
-
-
-    public String getUrl(){
-        var environment = Optional.ofNullable(System.getenv("SPRING_PROFILES_ACTIVE"))
-                .map(String::toLowerCase)
-                .orElse("dev");
-
-        String url = "http://cloud.%s.develop.corporation.com/service--parametrizador";
-
-        return switch (environment.toUpperCase()){
-            case "HML" ->  String.format(url, "hml");
-            case "PRD" -> String.format(url,"prd");
-            case "LOCAL" -> "http://localhost:5001/service--parametrizador";
-            default -> String.format(url, "dev");
-        };
-    }
 }
