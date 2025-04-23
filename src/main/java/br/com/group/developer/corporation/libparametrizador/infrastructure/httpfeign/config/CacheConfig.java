@@ -1,4 +1,4 @@
-package br.com.group.developer.corporation.libparametrizador.infrastructure.feign.config;
+package br.com.group.developer.corporation.libparametrizador.infrastructure.httpfeign.config;
 
 import br.com.group.developer.corporation.libparametrizador.constants.KeyCacheConstant;
 import org.springframework.cache.annotation.EnableCaching;

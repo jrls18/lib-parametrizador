@@ -1,6 +1,6 @@
 package br.com.group.developer.corporation.libparametrizador.config;
 
-import br.com.group.developer.corporation.libparametrizador.config.properties.FilterMultipleKey;
+import br.com.group.developer.corporation.libparametrizador.config.properties.Parameterize;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
@@ -18,12 +18,12 @@ import java.util.Optional;
 @Setter
 @Component
 @Configuration
-@ConfigurationProperties(value = "parameterize", ignoreInvalidFields = true)
+@ConfigurationProperties(value = "parameterization-properties", ignoreInvalidFields = true)
 @Validated
-public class ConfigProperties implements Serializable {
+public class ParameterizationProperties implements Serializable {
 
     @Serial
-    private static final long serialVersionUID = -614806822373052148L;
+    private static final long serialVersionUID = 5494335064406159711L;
 
     @Pattern(regexp = "^([0-9]*)$", message = "O campo maxRetry deve conter apenas valores númericos")
     private String maxRetry = "3";
@@ -31,23 +31,25 @@ public class ConfigProperties implements Serializable {
     @Pattern(regexp = "^([0-9]*)$", message = "O campo minutesTtl deve conter apenas valores númericos")
     private String minutesTtl = "5";
 
+    private String url;
+
     private boolean enableContingencyConfigMap = false;
 
     @NotNull(message = "O campo clientId é obrigatório")
-    @Pattern(regexp = "^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$", message = "O campo clientId deve conter apenas valores númericos")
+    @Pattern(regexp = "^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$", message = "O campo clientId deve conter apenas valores do  tipo UUID")
     private String clientId;
 
     @NotNull(message = "O campo clientSecret é obrigatório")
-    @Pattern(regexp = "^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$", message = "O campo clientSecret deve conter apenas valores númericos")
+    @Pattern(regexp = "^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$", message = "O campo clientSecret deve conter apenas valores do tipo UUID")
     private String clientSecret;
 
     @NotNull(message = "O campo applicationName é obrigatório")
     private String applicationName;
 
-    private FilterMultipleKey filterMultipleKey;
+    @NotNull(message = "O campo parameterize é obrigatório")
+    private Parameterize parameterize;
 
-
-    public String getUrl(){
+    public String getUrl() {
         var environment = Optional.ofNullable(System.getenv("SPRING_PROFILES_ACTIVE"))
                 .map(String::toLowerCase)
                 .orElse("dev");
