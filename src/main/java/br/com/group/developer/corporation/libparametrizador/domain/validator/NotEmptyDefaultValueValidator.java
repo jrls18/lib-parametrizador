@@ -15,7 +15,7 @@ public class NotEmptyDefaultValueValidator implements ConstraintValidator<NotEmp
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-        if (Boolean.TRUE.equals(properties.isEnableContingencyConfigMap())) {
+        if (properties.isEnableContingencyConfigMap()) {
             return !StringUtils.isBlank(value);
         }
         return true;

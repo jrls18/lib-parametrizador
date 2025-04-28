@@ -39,6 +39,7 @@ public class Parameterize implements Serializable {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    @Validated
     public static class Parameter implements Serializable{
 
         @Serial

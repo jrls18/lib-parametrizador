@@ -10,6 +10,6 @@ public class NotEmptySetValidator implements ConstraintValidator<NotEmptySet, Se
 
     @Override
     public boolean isValid(Set<?> value, ConstraintValidatorContext context) {
-        return !Boolean.TRUE.equals(CollectionUtils.isEmpty(value));
+        return !CollectionUtils.isEmpty(value);
     }
 }
