@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.net.ConnectException;
+import java.sql.Connection;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -142,8 +144,8 @@ public class ParameterizeCore implements ParameterizePort {
     private Map<String, Object> getParameters() {
         try {
             return parameterizeClientAdapter.getProperties().properties();
-        } catch (InternalServerErrorLibException | ServiceUnavailableLibException | TimeOutLibException ex) {
-            if (Boolean.TRUE.equals(properties.isEnableContingencyConfigMap())) {
+        } catch (Exception ex) {
+            if (properties.isEnableContingencyConfigMap()) {
                 Map<String, Object> defaultValue = new HashMap<>(properties.getParameterize().getFilters().length);
 
                 properties.getParameterize().getParameters().forEach(
