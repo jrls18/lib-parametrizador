@@ -4,16 +4,11 @@ import br.com.group.developer.corporation.libparametrizador.config.Parameterizat
 import br.com.group.developer.corporation.libparametrizador.constants.KeyCacheConstant;
 import br.com.group.developer.corporation.libparametrizador.domain.port.CacheGenericPort;
 import br.com.group.developer.corporation.libparametrizador.domain.port.ParameterizePort;
-import br.com.group.developer.corporation.libparametrizador.exceptions.InternalServerErrorLibException;
-import br.com.group.developer.corporation.libparametrizador.exceptions.ServiceUnavailableLibException;
-import br.com.group.developer.corporation.libparametrizador.exceptions.TimeOutLibException;
-import br.com.group.developer.corporation.libparametrizador.infrastructure.httpfeign.adapter.ParameterizeClientAdapter;
+import br.com.group.developer.corporation.libparametrizador.domain.provider.ParameterizeProvider;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.net.ConnectException;
-import java.sql.Connection;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +19,7 @@ public class ParameterizeCore implements ParameterizePort {
 
     private final CacheGenericPort cacheGenericPort;
 
-    private final ParameterizeClientAdapter parameterizeClientAdapter;
+    private final ParameterizeProvider parameterizeProvider;
 
     private final ParameterizationProperties properties;
 
@@ -38,7 +33,7 @@ public class ParameterizeCore implements ParameterizePort {
 
         var cache = this.cacheGenericPort.getCache(KeyCacheConstant.NAME_CACHE_PROPERTIES);
 
-        if (Boolean.FALSE.equals(cache.containsKey(key)))
+        if (!cache.containsKey(key))
             return false;
 
         return Boolean.parseBoolean(String.valueOf(cache.get(key)));
@@ -53,7 +48,7 @@ public class ParameterizeCore implements ParameterizePort {
 
         var cache = this.cacheGenericPort.getCache(KeyCacheConstant.NAME_CACHE_PROPERTIES);
 
-        if (Boolean.FALSE.equals(cache.containsKey(key)))
+        if (!cache.containsKey(key))
             return "";
 
         return String.valueOf(cache.get(key));
@@ -68,7 +63,7 @@ public class ParameterizeCore implements ParameterizePort {
 
         var cache = this.cacheGenericPort.getCache(KeyCacheConstant.NAME_CACHE_PROPERTIES);
 
-        if (Boolean.FALSE.equals(cache.containsKey(key)))
+        if (!cache.containsKey(key))
             return 0;
 
         return Integer.parseInt(String.valueOf(cache.get(key)));
@@ -83,7 +78,7 @@ public class ParameterizeCore implements ParameterizePort {
 
         var cache = this.cacheGenericPort.getCache(KeyCacheConstant.NAME_CACHE_PROPERTIES);
 
-        if (Boolean.FALSE.equals(cache.containsKey(key)))
+        if (!cache.containsKey(key))
             return 0L;
 
         return Long.parseLong(String.valueOf(cache.get(key)));
@@ -98,7 +93,7 @@ public class ParameterizeCore implements ParameterizePort {
 
         var cache = this.cacheGenericPort.getCache(KeyCacheConstant.NAME_CACHE_PROPERTIES);
 
-        if (Boolean.FALSE.equals(cache.containsKey(key)))
+        if (!cache.containsKey(key))
             return null;
 
         return cache.get(key);
@@ -114,7 +109,7 @@ public class ParameterizeCore implements ParameterizePort {
     private void execute() {
         var cache = this.cacheGenericPort.getCache(KeyCacheConstant.NAME_CACHE_PROPERTIES);
 
-        if (Boolean.FALSE.equals(cache.containsKey(KeyCacheConstant.NAME_KEY_DATE_TIME_TTL))) {
+        if (!cache.containsKey(KeyCacheConstant.NAME_KEY_DATE_TIME_TTL)) {
             getToggle();
             return;
         }
@@ -143,7 +138,7 @@ public class ParameterizeCore implements ParameterizePort {
 
     private Map<String, Object> getParameters() {
         try {
-            return parameterizeClientAdapter.getProperties().properties();
+            return parameterizeProvider.getProperties().properties();
         } catch (Exception ex) {
             if (properties.isEnableContingencyConfigMap()) {
                 Map<String, Object> defaultValue = new HashMap<>(properties.getParameterize().getFilters().length);

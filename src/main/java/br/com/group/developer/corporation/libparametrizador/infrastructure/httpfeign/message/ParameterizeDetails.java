@@ -6,7 +6,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.Map;
 
-public record ParameterizeResponse(
+public record ParameterizeDetails(
         @JsonProperty("properties")
         Map<String, Object> properties) implements Serializable {
 

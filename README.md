@@ -6,18 +6,18 @@ Lib resposável por fazer a consulta de properties no parametrizador.
 <dependency>
   <groupId>br.com.group.developer.corporation</groupId>
   <artifactId>lib-parametrizador</artifactId>
-  <version>4.0.1</version>
+  <version>5.0.0</version>
 </dependency>
 ```
 
 ### Gradle
 ```
-implementation group: 'br.com.group.developer.corporation', name: 'lib-parametrizador', version: '4.0.1'
+implementation group: 'br.com.group.developer.corporation', name: 'lib-parametrizador', version: '5.0.0'
 ```
 
 ### Gradle Short
 ```
-implementation 'br.com.group.developer.corporation:lib-parametrizador:4.0.1'
+implementation 'br.com.group.developer.corporation:lib-parametrizador:5.0.0'
 ```
 
 ### Desenho funcional da lib
