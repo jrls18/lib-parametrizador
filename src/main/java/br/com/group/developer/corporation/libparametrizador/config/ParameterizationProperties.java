@@ -33,6 +33,8 @@ public class ParameterizationProperties implements Serializable {
 
     private String uriBase;
 
+    private boolean enabledLocal = false;
+
     private String port;
 
     private boolean enabledHttps = false;

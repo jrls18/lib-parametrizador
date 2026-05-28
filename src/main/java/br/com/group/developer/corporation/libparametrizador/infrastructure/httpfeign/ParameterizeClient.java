@@ -11,9 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -24,8 +22,6 @@ import java.util.Optional;
 import java.util.Set;
 
 @RequiredArgsConstructor
-@Component
-@ConditionalOnMissingBean(ParameterizeProvider.class)
 public class ParameterizeClient implements ParameterizeProvider {
 
     private final Logger logger = LoggerFactory.getLogger(ParameterizeClient.class);
