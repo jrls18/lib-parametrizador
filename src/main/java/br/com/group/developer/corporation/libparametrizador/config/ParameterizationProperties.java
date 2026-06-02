@@ -31,11 +31,11 @@ public class ParameterizationProperties implements Serializable {
     @Pattern(regexp = "^([0-9]*)$", message = "O campo minutesTtl deve conter apenas valores númericos")
     private String minutesTtl = "5";
 
+    @Pattern(
+            regexp = "^(http://(localhost|((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})):\\d{1,5})?$",
+            message = "Se informado, deve ser http://localhost:<porta> ou http://<IP>:<porta>"
+    )
     private String uriBase;
-
-    private boolean enabledLocal = false;
-
-    private String port;
 
     private boolean enabledHttps = false;
 

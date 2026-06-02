@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
 @ConditionalOnMissingBean(ParameterizeProvider.class)
@@ -13,9 +14,10 @@ import org.springframework.context.annotation.Configuration;
 public class ParameterizeAutoConfiguration {
 
     private final ParameterizationProperties parameterizationProperties;
+    private final WebClient webClient;
 
     @Bean
     public ParameterizeProvider parameterizeProvider() {
-        return new ParameterizeClient(parameterizationProperties);
+        return new ParameterizeClient(parameterizationProperties, webClient);
     }
 }
