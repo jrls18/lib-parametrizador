@@ -6,6 +6,7 @@ import br.com.group.developer.corporation.libparametrizador.exceptions.*;
 import br.com.group.developer.corporation.libparametrizador.infrastructure.httpfeign.message.Parameterize;
 import br.com.group.developer.corporation.libparametrizador.infrastructure.httpfeign.message.ParameterizeDetails;
 import br.com.grupo.developer.corporation.lib.spring.context.holder.infrastructure.ContextHolder;
+import br.com.grupo.developer.corporation.libcommons.constants.FieldAssistantConstants;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -71,10 +72,10 @@ public class ParameterizeClient implements ParameterizeProvider {
                 .post()
                 .uri(uriCustom())
                 .contentType(MediaType.APPLICATION_JSON)
-                .header("client_id", properties.getClientId())
-                .header("client_secret", properties.getClientSecret())
-                .header("correlation_id", ContextHolder.get().getCorrelationId())
-                .header("requestingApplication", properties.getApplicationName())
+                .header(FieldAssistantConstants.CLIENT_ID, properties.getClientId())
+                .header(FieldAssistantConstants.CLIENT_SECRET, properties.getClientSecret())
+                .header(FieldAssistantConstants.CURRENTCORRELATION_ID, ContextHolder.get().getCorrelationId())
+                .header(FieldAssistantConstants.REQUESTING_APPLICATION, properties.getApplicationName())
                 .body(BodyInserters.fromValue(new Parameterize(parameters)))
                 .exchangeToMono(response -> {
 

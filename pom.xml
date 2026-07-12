@@ -12,7 +12,7 @@
 
 	<groupId>br.com.group.developer.corporation</groupId>
 	<artifactId>lib-parametrizador</artifactId>
-	<version>6.0.0</version>
+	<version>6.1.0</version>
 	<name>lib-parametrizador</name>
 
 	<properties>
@@ -78,7 +78,7 @@
 		<dependency>
 			<groupId>br.com.grupo.developer.corporation</groupId>
 			<artifactId>lib-commons</artifactId>
-			<version>1.5.1</version>
+			<version>1.5.2</version>
 		</dependency>
 
 		<dependency>
