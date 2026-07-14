@@ -32,7 +32,7 @@ public class ParameterizationProperties implements Serializable {
     private String minutesTtl = "5";
 
     @Pattern(
-            regexp = "^(http://(localhost|((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})):\\d{1,5})?$",
+            regexp = "^(http://(localhost|([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}|(\\d{1,3}\\.){3}\\d{1,3})(:\\d{1,5})?)?$",
             message = "Se informado, deve ser http://localhost:<porta> ou http://<IP>:<porta>"
     )
     private String uriBase;
