@@ -5,7 +5,7 @@ import br.com.group.developer.corporation.libparametrizador.domain.provider.Para
 import br.com.group.developer.corporation.libparametrizador.exceptions.*;
 import br.com.group.developer.corporation.libparametrizador.infrastructure.httpfeign.message.Parameterize;
 import br.com.group.developer.corporation.libparametrizador.infrastructure.httpfeign.message.ParameterizeDetails;
-import br.com.grupo.developer.corporation.lib.spring.context.holder.infrastructure.ContextHolder;
+import br.com.group.developer.corporation.lib.spring.context.holder.infrastructure.ContextHolder;
 import br.com.grupo.developer.corporation.libcommons.constants.FieldAssistantConstants;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
