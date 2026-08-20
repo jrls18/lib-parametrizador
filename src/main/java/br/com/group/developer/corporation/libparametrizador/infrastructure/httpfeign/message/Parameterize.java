@@ -3,7 +3,7 @@ package br.com.group.developer.corporation.libparametrizador.infrastructure.http
 import java.io.Serial;
 import java.io.Serializable;
 
-public record ParameterizeRequest (Properties properties) implements Serializable {
+public record Parameterize(Properties properties) implements Serializable {
 
     @Serial
     private static final long serialVersionUID = -133852230117213931L;

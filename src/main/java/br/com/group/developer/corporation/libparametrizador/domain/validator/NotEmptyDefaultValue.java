@@ -8,12 +8,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Constraint(validatedBy = NotEmptyDefaultValueValidator.class)
+@Constraint(validatedBy = RequiredDefaultValueValidator.class)
 @Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface NotEmptyDefaultValue {
 
-    String message() default "O conjunto não pode ser nulo ou vazio";
+    String message() default "defaultValue is mandatory when contingency mode is enabled";
 
     Class<?>[] groups() default {};
 

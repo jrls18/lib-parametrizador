@@ -9,15 +9,16 @@ import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
-public class NotEmptyDefaultValueValidator implements ConstraintValidator<NotEmptyDefaultValue, String> {
+public class RequiredDefaultValueValidator implements ConstraintValidator<NotEmptyDefaultValue, String> {
 
     private final ParameterizationProperties properties;
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-        if (properties.isEnableContingencyConfigMap()) {
-            return !StringUtils.isBlank(value);
+        if (!properties.isEnableContingencyConfigMap()) {
+            return true;
         }
-        return true;
+
+        return StringUtils.isNotBlank(value);
     }
 }

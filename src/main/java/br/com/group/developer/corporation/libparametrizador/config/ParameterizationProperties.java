@@ -12,7 +12,7 @@ import org.springframework.validation.annotation.Validated;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Optional;
+
 
 @Getter
 @Setter
@@ -31,7 +31,13 @@ public class ParameterizationProperties implements Serializable {
     @Pattern(regexp = "^([0-9]*)$", message = "O campo minutesTtl deve conter apenas valores númericos")
     private String minutesTtl = "5";
 
-    private String url;
+    @Pattern(
+            regexp = "^(http://(localhost|([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}|(\\d{1,3}\\.){3}\\d{1,3})(:\\d{1,5})?)?$",
+            message = "Se informado, deve ser http://localhost:<porta> ou http://<IP>:<porta>"
+    )
+    private String uriBase;
+
+    private boolean enabledHttps = false;
 
     private boolean enableContingencyConfigMap = false;
 
@@ -49,18 +55,4 @@ public class ParameterizationProperties implements Serializable {
     @NotNull(message = "O campo parameterize é obrigatório")
     private Parameterize parameterize;
 
-    public String getUrl() {
-        var environment = Optional.ofNullable(System.getenv("SPRING_PROFILES_ACTIVE"))
-                .map(String::toLowerCase)
-                .orElse("dev");
-
-        String url = "http://cloud.%s.develop.corporation.com/service--parametrizador";
-
-        return switch (environment.toUpperCase()){
-            case "HML" ->  String.format(url, "hml");
-            case "PRD" -> String.format(url,"prd");
-            case "LOCAL" -> "http://localhost:5001/service--parametrizador";
-            default -> String.format(url, "dev");
-        };
-    }
 }

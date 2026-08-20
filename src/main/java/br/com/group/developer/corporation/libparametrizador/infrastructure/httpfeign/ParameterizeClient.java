@@ -1,93 +1,119 @@
 package br.com.group.developer.corporation.libparametrizador.infrastructure.httpfeign;
 
 import br.com.group.developer.corporation.libparametrizador.config.ParameterizationProperties;
+import br.com.group.developer.corporation.libparametrizador.domain.provider.ParameterizeProvider;
 import br.com.group.developer.corporation.libparametrizador.exceptions.*;
-import br.com.group.developer.corporation.libparametrizador.infrastructure.httpfeign.message.ParameterizeRequest;
-import br.com.group.developer.corporation.libparametrizador.infrastructure.httpfeign.message.ParameterizeResponse;
-import br.com.grupo.developer.corporation.lib.spring.context.holder.infrastructure.ContextHolder;
+import br.com.group.developer.corporation.libparametrizador.infrastructure.httpfeign.message.Parameterize;
+import br.com.group.developer.corporation.libparametrizador.infrastructure.httpfeign.message.ParameterizeDetails;
+import br.com.group.developer.corporation.lib.spring.context.holder.infrastructure.ContextHolder;
+import br.com.grupo.developer.corporation.libcommons.constants.FieldAssistantConstants;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @RequiredArgsConstructor
-@Component
-public class ParameterizeClient {
+public class ParameterizeClient implements ParameterizeProvider {
 
     private final Logger logger = LoggerFactory.getLogger(ParameterizeClient.class);
 
+    private static final String DEFAULT_HOST =
+            "http://service--platform.platform.svc.cluster.local";
+
+    private static final String ENDPOINT =
+            "/service--platform/api/parameterizations/internal/v1/properties";
 
     private final ParameterizationProperties properties;
+    private final WebClient webClient;
 
-    private static final String ENDPOINT = "/chave/v1/filter/execute";
+    // -------------------------
+    // URL resolver (cluster/local)
+    // -------------------------
+    private String uriCustom() {
 
+        String baseUrl = StringUtils.removeEnd(
+                StringUtils.defaultIfBlank(
+                        properties.getUriBase(),
+                        DEFAULT_HOST
+                ),
+                "/"
+        );
+
+        return baseUrl + ENDPOINT;
+    }
+
+    // -------------------------
+    // API CALL
+    // -------------------------
+    @Override
     @Retry(name = "callApiGetParameterize")
-    public ParameterizeResponse getProperties(final ParameterizeRequest request) {
+    public ParameterizeDetails getProperties() {
 
-        return WebClient.builder()
-                .filter(errorResponse())
-                .baseUrl(getUrl())
-                .build().post()
+        Set<String> param = new HashSet<>(properties.getParameterize().getFilters().length);
+
+        properties.getParameterize()
+                .getParameters()
+                .forEach(items -> param.add(items.getKey()));
+
+        var parameters = new Parameterize.Properties(
+                param.toArray(new String[0]),
+                properties.getParameterize().getFilters()
+        );
+
+        return webClient
+                .post()
+                .uri(uriCustom())
                 .contentType(MediaType.APPLICATION_JSON)
-                .header("client_id", ContextHolder.get().getClientId())
-                .header("client_secret", ContextHolder.get().getClientSecret())
-                .header("correlation_id", ContextHolder.get().getCorrelationId())
-                .header("origin", properties.getApplicationName())
-                .body(BodyInserters.fromValue(request))
-                .retrieve()
-                .bodyToMono(ParameterizeResponse.class)
-                .block();
-    }
+                .header(FieldAssistantConstants.CLIENT_ID, properties.getClientId())
+                .header(FieldAssistantConstants.CLIENT_SECRET, properties.getClientSecret())
+                .header(FieldAssistantConstants.CURRENTCORRELATION_ID, ContextHolder.get().getCorrelationId())
+                .header(FieldAssistantConstants.REQUESTING_APPLICATION, properties.getApplicationName())
+                .body(BodyInserters.fromValue(new Parameterize(parameters)))
+                .exchangeToMono(response -> {
 
-    private ExchangeFilterFunction errorResponse() {
-        return ExchangeFilterFunction.ofResponseProcessor(clientResponse -> {
+                    int status = response.statusCode().value();
 
-            if (clientResponse.statusCode().is4xxClientError()) {
-                switch (clientResponse.statusCode().value()) {
-                    case 401, 403 -> handleUnauthorized();
-                    case 408 -> handleTimeOut();
-                    default -> clientResponse.bodyToMono(String.class)
-                            .flatMap(payload -> {
-                                logger.warn("BAD_REQUEST, ERRO DE NEGÓCIO DETALHES {} ", payload);
-                                return Mono.error(new BadRequestLibException(payload));
+                    if (response.statusCode().is2xxSuccessful()) {
+                        return response.bodyToMono(ParameterizeDetails.class);
+                    }
+
+                    return response.bodyToMono(String.class)
+                            .flatMap(body -> {
+
+                                logger.error(
+                                        "ERROR calling parameterize API. status={}, body={}",
+                                        status,
+                                        body
+                                );
+
+                                return switch (status) {
+
+                                    case 401, 403 ->
+                                            Mono.error(new NotAuthorizedLibException("UNAUTHORIZED: " + uriCustom()));
+
+                                    case 408 ->
+                                            Mono.error(new TimeOutLibException("TIMEOUT: " + uriCustom()));
+
+                                    case 503 ->
+                                            Mono.error(new ServiceUnavailableLibException("SERVICE_UNAVAILABLE: " + uriCustom()));
+
+                                    case 500 ->
+                                            Mono.error(new InternalServerErrorLibException("INTERNAL_SERVER_ERROR: " + uriCustom()));
+
+                                    default ->
+                                            Mono.error(new BadRequestLibException(body));
+                                };
                             });
-                }
-            } else if (clientResponse.statusCode().is5xxServerError()) {
-
-                if (clientResponse.statusCode().value() == 503) {
-                    handleServiceUnavailable();
-                } else {
-                    Mono.error(new InternalServerErrorLibException("INTERNAL_SERVER_ERROR, FALHA AO CHAMAR A API URL: ".concat(getUrl())));
-                }
-            }
-
-            return Mono.just(clientResponse);
-        });
-    }
-
-    private String getUrl() {
-        return properties.getUrl().concat(ENDPOINT);
-    }
-
-    private void handleServiceUnavailable() {
-        logger.warn("SERVICE_UNAVAILABLE, FALHA AO CHAMAR A API URL: {}", getUrl());
-        throw new ServiceUnavailableLibException("SERVICE UNAVAILABLE, FALHA AO CHAMAR A API URL: " + getUrl());
-    }
-
-    private void handleUnauthorized() {
-        logger.warn("UNAUTHORIZED, FALHA AO CHAMAR A API URL: {}", getUrl());
-        throw new NotAuthorizedLibException("UNAUTHORIZED, FALHA AO CHAMAR A API URL: ".concat(getUrl()));
-    }
-
-    private void handleTimeOut() {
-        logger.warn("TIME_OUT, FALHA AO CHAMAR A API URL: {} ", getUrl());
-        throw new TimeOutLibException("TIMEOUT, FALHA AO CHAMAR A API URL: ".concat(getUrl()));
+                })
+                .block();
     }
 
 }
